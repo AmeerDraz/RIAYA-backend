@@ -9,8 +9,6 @@ import Stripe from "stripe";
 import crypto from "crypto";
 import nodemailer from "nodemailer";
 
-
-
 // تسجيل المستخدم
 const registerUser = async (req, res) => {
     try {
@@ -85,8 +83,7 @@ const forgotPassword = async (req, res) => {
         await user.save();
         console.log("user after save:");
 
-        const resetLink = `http://localhost:5173/reset-password?token=${token}`; 
-
+        const resetLink = `${process.env.FRONTEND_BASE_URL}/reset-password?token=${token}`;
 
         // Send email
         const transporter = nodemailer.createTransport({
@@ -112,7 +109,6 @@ const forgotPassword = async (req, res) => {
             html: `<p>Click <a href="${resetLink}">here</a> to reset your password. This link is valid for 1 hour.</p>`,
         });
 
-  
         console.log("sent email to:", user.email);
 
         res.json({ message: "Password reset link sent to your email" });
@@ -405,7 +401,6 @@ const paymentStripe = async (req, res) => {
     try {
         const { appointmentId } = req.body;
 
-
         // جلب الموعد مع بيانات الطبيب
         const appointment = await appointmentModel
             .findById(appointmentId)
@@ -582,7 +577,7 @@ const getDoctorAvailableSlots = async (req, res) => {
                     available: doctor.available,
                     image: doctor.image,
                     about: doctor.about,
-                    address: doctor.address, 
+                    address: doctor.address,
                 },
             });
         }
@@ -690,7 +685,7 @@ const getDoctorAvailableSlots = async (req, res) => {
                 available: doctor.available,
                 image: doctor.image,
                 about: doctor.about,
-                address: doctor.address, 
+                address: doctor.address,
             },
         });
     } catch (error) {
