@@ -98,10 +98,7 @@ const forgotPassword = async (req, res) => {
             // logger: true,
             // debug: true,
         });
-        console.log("prcEm", process.env.EMAIL_USER);
-        console.log("prcps", process.env.EMAIL_PASS);
-        console.log("before sending msg");
-        console.log("user email:", user.email);
+      
         await transporter.sendMail({
             from: '"MyApp Support Team" <0d1cb88b49@emaily.pro>',
             to: user.email,
@@ -109,7 +106,6 @@ const forgotPassword = async (req, res) => {
             html: `<p>Click <a href="${resetLink}">here</a> to reset your password. This link is valid for 1 hour.</p>`,
         });
 
-        console.log("sent email to:", user.email);
 
         res.json({ message: "Password reset link sent to your email" });
     } catch (err) {
@@ -118,60 +114,7 @@ const forgotPassword = async (req, res) => {
     }
 };
 
-// const forgotPassword = async (req, res) => {
-//     console.log("🔁 Start forgotPassword function");
 
-//     const { email } = req.body;
-
-//     try {
-//         const user = await userModel.findOne({ email });
-
-//         if (!user) {
-//             return res.status(404).json({ message: "Email not found" });
-//         }
-
-//         const token = crypto.randomBytes(32).toString("hex");
-//         const tokenExpiry = Date.now() + 3600000; // 1 hour
-
-//         user.resetToken = token;
-//         user.resetTokenExpiry = tokenExpiry;
-//         await user.save();
-
-//         const resetLink = `${process.env.FRONTEND_URL}/reset-password/${token}`;
-//         console.log("🔗 Reset link:", resetLink);
-
-//         // إعداد nodemailer
-//         const transporter = nodemailer.createTransport({
-//             service: "gmail",
-//             host: "smtp.gmail.com",
-//             port: 587,
-//             secure: false,
-//             auth: {
-//                 user: process.env.EMAIL_USER,
-//                 pass: process.env.EMAIL_PASS,
-//             },
-//         });
-
-//         try {
-//             const info = await transporter.sendMail({
-//                 from: process.env.EMAIL_USER,
-//                 to: user.email,
-//                 subject: "Reset your password",
-//                 html: `<p>Click <a href="${resetLink}">here</a> to reset your password. This link is valid for 1 hour.</p>`,
-//             });
-
-//             console.log("✅ Email sent:", info.response);
-
-//             res.json({ message: "Password reset link sent to your email" });
-//         } catch (emailErr) {
-//             console.error("Failed to send email:", emailErr);
-//             res.status(500).json({ message: "Failed to send reset email" });
-//         }
-//     } catch (err) {
-//         console.error("Server error:", err);
-//         res.status(500).json({ message: "Server error" });
-//     }
-// };
 
 // POST /reset-password/:token
 const resetPassword = async (req, res) => {
@@ -448,9 +391,9 @@ const paymentStripe = async (req, res) => {
             ],
             mode: "payment",
 
-            success_url: `http://localhost:5173/payment-success?appointmentId=${appointment._id}`,
+            success_url: `${process.env.FRONTEND_BASE_URL}/payment-success?appointmentId=${appointment._id}`,
 
-            cancel_url: `http://localhost:5173/payment-failed`,
+            cancel_url: `${process.env.FRONTEND_BASE_URL}/payment-failed`,
             metadata: {
                 appointmentId: appointment._id.toString(),
                 userId: req.userId?.toString(),
