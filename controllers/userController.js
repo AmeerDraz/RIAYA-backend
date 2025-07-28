@@ -375,19 +375,7 @@ const paymentStripe = async (req, res) => {
         // جلب الموعد مع بيانات الطبيب
         const appointment = await appointmentModel
             .findById(appointmentId)
-            .populate("docId"); // تأكد من صحة الاسم هنا حسب السكيما
-
-        console.log("Appointment data:", appointment);
-        console.log(
-            "Appointment fees:",
-            appointment ? appointment.docData.fees : "No appointment"
-        );
-        console.log(
-            "Doctor name:",
-            appointment && appointment.docData._id
-                ? appointment.docData.name
-                : "No doctor"
-        );
+            .populate("docId");
 
         if (!appointment) {
             return res
@@ -401,7 +389,7 @@ const paymentStripe = async (req, res) => {
                 .json({ success: false, message: "Already paid" });
         }
 
-        console.log("Creating Stripe session...");
+        // Create Stripe session
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ["card"],
             customer_email: appointment.userData.email,
@@ -412,20 +400,24 @@ const paymentStripe = async (req, res) => {
                         product_data: {
                             name: `Appointment with Dr. ${appointment.docData.name}`,
                         },
-                        unit_amount: Math.round(appointment.docData.fees * 100), // بالسنت
+                        unit_amount: Math.round(appointment.docData.fees * 100),
                     },
                     quantity: 1,
                 },
             ],
             mode: "payment",
-
             success_url: `${process.env.FRONTEND_BASE_URL}/payment-success?appointmentId=${appointment._id}`,
-
             cancel_url: `${process.env.FRONTEND_BASE_URL}/payment-failed`,
             metadata: {
                 appointmentId: appointment._id.toString(),
                 userId: req.userId?.toString(),
             },
+        });
+
+        // Save Stripe session and payment intent IDs to appointment
+        await appointmentModel.findByIdAndUpdate(appointmentId, {
+            stripeSessionId: session.id,
+            stripePaymentIntentId: session.payment_intent || undefined,
         });
 
         res.json({ success: true, sessionUrl: session.url });

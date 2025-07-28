@@ -17,6 +17,10 @@ const appointmentSchema = new mongoose.Schema({
         default: "Pending",
     },
 
+    // Stripe session and payment intent IDs for refunds
+    stripeSessionId: { type: String },
+    stripePaymentIntentId: { type: String },
+
     isCompleted: { type: Boolean, default: false },
 });
 
