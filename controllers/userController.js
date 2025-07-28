@@ -98,23 +98,20 @@ const forgotPassword = async (req, res) => {
             // logger: true,
             // debug: true,
         });
-      
+
         await transporter.sendMail({
             from: '"MyApp Support Team" <0d1cb88b49@emaily.pro>',
             to: user.email,
             subject: "Reset your password",
             html: `<p>Click <a href="${resetLink}">here</a> to reset your password. This link is valid for 1 hour.</p>`,
         });
-
-
+        s;
         res.json({ message: "Password reset link sent to your email" });
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: "Server error" });
     }
 };
-
-
 
 // POST /reset-password/:token
 const resetPassword = async (req, res) => {
@@ -316,6 +313,31 @@ const cancelAppointment = async (req, res) => {
             return res.json({ success: false, message: "Unauthorized action" });
         }
 
+        // Refund if payment is online (not cash)
+        let refundResult = null;
+        if (
+            appointmentData.payment &&
+            typeof appointmentData.payment === "string" &&
+            appointmentData.payment.toLowerCase() === "online" &&
+            appointmentData.stripeSessionId
+        ) {
+            try {
+                // Retrieve the session to get the payment intent
+                const session = await stripe.checkout.sessions.retrieve(
+                    appointmentData.stripeSessionId
+                );
+                if (session && session.payment_intent) {
+                    const refund = await stripe.refunds.create({
+                        payment_intent: session.payment_intent,
+                    });
+                    refundResult = refund;
+                }
+            } catch (refundErr) {
+                console.error("Stripe refund error:", refundErr);
+                // Optionally, you can return an error here or continue
+            }
+        }
+
         await appointmentModel.findByIdAndUpdate(appointmentId, {
             cancelled: true,
         });
@@ -329,7 +351,13 @@ const cancelAppointment = async (req, res) => {
         );
         await doctorModel.findByIdAndUpdate(docId, { slots_booked });
 
-        res.json({ success: true, message: "Appointment cancelled" });
+        res.json({
+            success: true,
+            message:
+                "Appointment cancelled" +
+                (refundResult ? " and payment refunded" : ""),
+            refund: refundResult || undefined,
+        });
     } catch (error) {
         console.error(error);
         res.json({ success: false, message: error.message });
