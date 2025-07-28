@@ -103,7 +103,272 @@ const forgotPassword = async (req, res) => {
             from: '"MyApp Support Team" <0d1cb88b49@emaily.pro>',
             to: user.email,
             subject: "Reset your password",
-            html: `<p>Click <a href="${resetLink}">here</a> to reset your password. This link is valid for 1 hour.</p>`,
+            html: `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Your Password</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #3CB9A0 0%, #2a9d8f 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            position: relative;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #3CB9A0, #2a9d8f);
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+        
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .lock-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            z-index: 2;
+        }
+        
+        .lock-icon svg {
+            width: 40px;
+            height: 40px;
+            fill: white;
+        }
+        
+        .header h1 {
+            color: white;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .header p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 16px;
+            font-weight: 300;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .content {
+            padding: 50px 40px;
+            text-align: center;
+        }
+        
+        .message {
+            font-size: 18px;
+            color: #555;
+            margin-bottom: 30px;
+            line-height: 1.8;
+        }
+        
+        .reset-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #3CB9A0, #2a9d8f);
+            color: white;
+            text-decoration: none;
+            padding: 18px 40px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(60, 185, 160, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .reset-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .reset-button:hover::before {
+            left: 100%;
+        }
+        
+        .reset-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(60, 185, 160, 0.6);
+        }
+        
+        .security-notice {
+            background: linear-gradient(135deg, #f0fffe, #e8fffe);
+            border-left: 4px solid #3CB9A0;
+            padding: 25px;
+            margin: 40px 0;
+            border-radius: 10px;
+        }
+        
+        .security-notice h3 {
+            color: #333;
+            font-size: 18px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .security-notice p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .timer {
+            background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .timer h4 {
+            color: #d63031;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+        
+        .timer p {
+            color: #2d3436;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .footer {
+            background: #f8f9fa;
+            padding: 30px 40px;
+            text-align: center;
+            border-top: 1px solid #eee;
+        }
+        
+        .footer p {
+            color: #999;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        @media (max-width: 600px) {
+            .email-container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+            
+            .content {
+                padding: 30px 20px;
+            }
+            
+            .header {
+                padding: 30px 20px;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+            
+            .reset-button {
+                padding: 15px 30px;
+                font-size: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <div class="lock-icon">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12,17A2,2 0 0,0 14,15C14,13.89 13.1,13 12,13A2,2 0 0,0 10,15A2,2 0 0,0 12,17M18,8A2,2 0 0,1 20,10V20A2,2 0 0,1 18,22H6A2,2 0 0,1 4,20V10C4,8.89 4.9,8 6,8H7V6A5,5 0 0,1 12,1A5,5 0 0,1 17,6V8H18M12,3A3,3 0 0,0 9,6V8H15V6A3,3 0 0,0 12,3Z"/>
+                </svg>
+            </div>
+            <h1>Password Reset</h1>
+            <p>Let's get you back into your account</p>
+        </div>
+        
+        <div class="content">
+            <div class="message">
+                <p>We received a request to reset your password. No worries, it happens to the best of us! Click the button below to create a new password and regain access to your account.</p>
+            </div>
+            
+            <a href="${resetLink}" class="reset-button">Reset My Password</a>
+            
+            <div class="timer">
+                <h4>⏰ Time Sensitive</h4>
+                <p>This link expires in <strong>1 hour</strong> for your security</p>
+            </div>
+            
+            <div class="security-notice">
+                <h3>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#3CB9A0">
+                        <path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,7C13.4,7 14.8,7.6 15.8,8.6C16.8,9.6 17.4,11 17.4,12.4C17.4,13.8 16.8,15.2 15.8,16.2C14.8,17.2 13.4,17.8 12,17.8C10.6,17.8 9.2,17.2 8.2,16.2C7.2,15.2 6.6,13.8 6.6,12.4C6.6,11 7.2,9.6 8.2,8.6C9.2,7.6 10.6,7 12,7M12,9C11.2,9 10.4,9.3 9.9,9.9C9.3,10.4 9,11.2 9,12C9,12.8 9.3,13.6 9.9,14.1C10.4,14.7 11.2,15 12,15C12.8,15 13.6,14.7 14.1,14.1C14.7,13.6 15,12.8 15,12C15,11.2 14.7,10.4 14.1,9.9C13.6,9.3 12.8,9 12,9Z"/>
+                    </svg>
+                    Security Notice
+                </h3>
+                <p>If you didn't request this password reset, please ignore this email. Your account remains secure and no changes have been made.</p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>This email was sent from a secure, monitored mailbox. Please do not reply to this message.</p>
+            <p>Need help? Contact our <a href="#">support team</a> or visit our <a href="#">help center</a>.</p>
+        </div>
+    </div>
+</body>
+</html>`,
         });
         res.json({ message: "Password reset link sent to your email" });
     } catch (err) {
