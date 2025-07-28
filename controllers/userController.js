@@ -314,6 +314,7 @@ const cancelAppointment = async (req, res) => {
         }
 
         // Refund if payment is online (not cash)
+        console.log("appointmentData", appointmentData);
         let refundResult = null;
         if (
             appointmentData.payment &&
@@ -321,15 +322,18 @@ const cancelAppointment = async (req, res) => {
             appointmentData.payment.toLowerCase() === "online" &&
             appointmentData.stripeSessionId
         ) {
+            console.log("in stripe refund");
             try {
                 // Retrieve the session to get the payment intent
                 const session = await stripe.checkout.sessions.retrieve(
                     appointmentData.stripeSessionId
                 );
+                console.log("session:", session);
                 if (session && session.payment_intent) {
                     const refund = await stripe.refunds.create({
                         payment_intent: session.payment_intent,
                     });
+                    console.log("refund:", refund);
                     refundResult = refund;
                 }
             } catch (refundErr) {
