@@ -105,7 +105,6 @@ const forgotPassword = async (req, res) => {
             subject: "Reset your password",
             html: `<p>Click <a href="${resetLink}">here</a> to reset your password. This link is valid for 1 hour.</p>`,
         });
-        s;
         res.json({ message: "Password reset link sent to your email" });
     } catch (err) {
         console.error(err);
@@ -314,7 +313,6 @@ const cancelAppointment = async (req, res) => {
         }
 
         // Refund if payment is online (not cash)
-        console.log("appointmentData", appointmentData);
         let refundResult = null;
         if (
             appointmentData.payment &&
@@ -322,18 +320,15 @@ const cancelAppointment = async (req, res) => {
             appointmentData.payment.toLowerCase() === "online" &&
             appointmentData.stripeSessionId
         ) {
-            console.log("in stripe refund");
             try {
                 // Retrieve the session to get the payment intent
                 const session = await stripe.checkout.sessions.retrieve(
                     appointmentData.stripeSessionId
                 );
-                console.log("session:", session);
                 if (session && session.payment_intent) {
                     const refund = await stripe.refunds.create({
                         payment_intent: session.payment_intent,
                     });
-                    console.log("refund:", refund);
                     refundResult = refund;
                 }
             } catch (refundErr) {
