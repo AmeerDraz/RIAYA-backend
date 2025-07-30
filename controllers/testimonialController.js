@@ -1,10 +1,8 @@
-
 import testimonialModel from "../models/testimonialModel.js";
-import { userModel } from "../models/userModel.js"; 
+import { userModel } from "../models/userModel.js";
+import { setUserReviewed } from "./userController.js";
 
-
-
-export const addTestimonial = async (req, res) => {
+const addTestimonial = async (req, res) => {
     try {
         const userId = req.userId;
         const { text, title, location } = req.body;
@@ -24,6 +22,8 @@ export const addTestimonial = async (req, res) => {
         });
 
         await testimonial.save();
+        // Mark user as reviewed
+        await setUserReviewed(userId);
 
         res.status(201).json({
             success: true,
@@ -97,3 +97,16 @@ export const updateTestimonial = async (req, res) => {
         res.status(500).json({ success: false, message: "Server Error" });
     }
 };
+
+// Mark user as reviewed after adding a testimonial
+// This function should be called after a testimonial is successfully added
+const setUserReviewed = async (userId) => {
+    try {
+        await userModel.findByIdAndUpdate(userId, { isReviewed: true });
+    } catch (err) {
+        console.error("Error setting isReviewed:", err);
+    }
+};
+
+
+export { setUserReviewed, addTestimonial };

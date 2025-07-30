@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const UserStatus = Object.freeze({
     ACTIVE: "active",
@@ -20,6 +20,7 @@ const userSchema = new mongoose.Schema(
         gender: { type: String, default: "unselected" },
         dob: { type: String, default: "unselected" },
         phone: { type: String, default: "000000000" },
+        isReviewed: { type: Boolean, default: false },
         status: { type: String, required: true, default: UserStatus.ONBORDING },
         resetToken: { type: String },
         resetTokenExpiry: { type: Date },
@@ -27,9 +28,6 @@ const userSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-const userModel = mongoose.models.user || mongoose.model('user', userSchema)
+const userModel = mongoose.models.user || mongoose.model("user", userSchema);
 
-export {userModel, UserStatus}
-
-
-
+export { userModel, UserStatus };
