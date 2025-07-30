@@ -1,6 +1,5 @@
 import testimonialModel from "../models/testimonialModel.js";
 import { userModel } from "../models/userModel.js";
-import { setUserReviewed } from "./userController.js";
 
 const addTestimonial = async (req, res) => {
     try {
@@ -107,6 +106,4 @@ const setUserReviewed = async (userId) => {
         console.error("Error setting isReviewed:", err);
     }
 };
-
-
-export { setUserReviewed, addTestimonial };
+export { addTestimonial };
