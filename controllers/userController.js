@@ -453,7 +453,6 @@ const updateProfile = async (req, res) => {
             return res.json({ success: false, message: "Missing data" });
         }
 
-                    console.log("qmwe", phone);
 
         const updatedData = {
             name,
