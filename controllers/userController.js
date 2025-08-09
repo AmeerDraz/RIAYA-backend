@@ -426,23 +426,7 @@ const updateProfile = async (req, res) => {
         const imageFile = req.file;
 
         var isValidData = false;
-        // if (
-        //     !name ||
-        //     typeof name !== "string" ||
-        //     name.trim() === "" ||
-        //     !phone ||
-        //     typeof phone !== "string" ||
-        //     !/^\+?[0-9]{7,15}$/.test(phone) ||
-        //     !address ||
-        //     typeof address !== "string" ||
-        //     address.trim() === "" ||
-        //     !dob ||
-        //     isNaN(Date.parse(dob)) ||
-        //     !gender ||
-        //     !["male", "female", "unselected"].includes(gender.toLowerCase())
-        // )
         const cleanedPhone = phone ? phone.replace(/[^0-9+]/g, "") : "";
-
         if (
             !name ||
             typeof name !== "string" ||
@@ -459,7 +443,6 @@ const updateProfile = async (req, res) => {
             !["male", "female", "unselected"].includes(gender.toLowerCase())
         ) {
             // todo: nothing
-            console.log("qmwe" ,phone)
         } else {
             isValidData = true;
         }
@@ -469,6 +452,8 @@ const updateProfile = async (req, res) => {
         if (!name || !phone || !dob || !gender || !address) {
             return res.json({ success: false, message: "Missing data" });
         }
+
+                    console.log("qmwe", phone);
 
         const updatedData = {
             name,
